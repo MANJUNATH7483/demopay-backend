@@ -3,59 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan QR</title>
+    <title>Auto Scan QR</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
-        body { font-family: sans-serif; background: #000; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #reader { width: 100%; max-width: 400px; background: #000; }
-        .back-btn { position: absolute; top: 20px; left: 20px; color: white; text-decoration: none; font-size: 18px; z-index: 100; }
-        h3 { margin-bottom: 10px; }
-        #status { color: #ccc; font-size: 12px; margin-top: 10px; }
+        /* Make it look like a real app camera */
+        body { margin: 0; padding: 0; background-color: #000; color: white; font-family: sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* Full Screen Video */
+        #reader { width: 100%; height: 100%; object-fit: cover; border: none; }
+        
+        /* Hide any default buttons if they appear */
+        button { display: none !important; }
+
+        /* Overlay Text */
+        #status {
+            position: absolute; bottom: 100px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff; padding: 10px 20px; border-radius: 30px;
+            font-size: 14px; text-align: center;
+            z-index: 20;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute; top: 30px; left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 15px; border-radius: 8px;
+            text-decoration: none; color: white; font-weight: bold;
+            z-index: 20;
+        }
+
+        /* Scanning Box Overlay */
+        .scan-box {
+            position: absolute;
+            width: 250px; height: 250px;
+            border: 2px solid #0f0;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            z-index: 10;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
     <a href="Home Screen.html" class="back-btn">← Back</a>
-    <h3>Scan & Pay</h3>
     
     <div id="reader"></div>
-    <div id="status">Starting Camera...</div>
+    
+    <div class="scan-box"></div>
+    <div id="status">Point camera at QR Code</div>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            // Handle the scanned text (e.g., "upi://pay?pa=...")
-            document.getElementById('status').innerText = "Scanned: " + decodedText;
+        // Use the "Pro" API to avoid default buttons
+        const html5QrCode = new Html5Qrcode("reader");
+
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            // 1. Play a beep (optional) or vibrate
+            if (navigator.vibrate) navigator.vibrate(200);
+
+            // 2. Stop the camera immediately
+            html5QrCode.stop().then(() => {
+                document.getElementById('status').innerText = "Processing...";
+
+                // 3. PARSE THE UPI DATA
+                // UPI Format: upi://pay?pa=9876543210@ybl&pn=JohnDoe...
+                let upi_id = "Unknown";
+                let name = "Merchant";
+
+                try {
+                    const urlParams = new URLSearchParams(decodedText.split('?')[1]);
+                    
+                    // Extract UPI ID (pa) -> Use this as 'mobile'
+                    if (urlParams.has('pa')) {
+                        upi_id = urlParams.get('pa'); // e.g., 9999999999@ybl
+                    }
+                    
+                    // Extract Name (pn)
+                    if (urlParams.has('pn')) {
+                        name = urlParams.get('pn');
+                    }
+                } catch (e) {
+                    console.log("Not a standard UPI QR, using raw text");
+                    upi_id = decodedText; // Fallback
+                }
+
+                // 4. Redirect to Payment Screen with extracted data
+                // We send 'upi_id' as the 'mobile' parameter so the system knows who to pay
+                window.location.href = `payment_chat.html?mobile=${encodeURIComponent(upi_id)}&name=${encodeURIComponent(name)}`;
             
-            // Extract Name/UPI ID if possible, or just redirect
-            // Simple redirect to payment chat with placeholder
-            // If the QR contains a name (e.g., &pn=Rahul), we can parse it
-            let name = "Merchant";
-            if(decodedText.includes("pn=")){
-                const urlParams = new URLSearchParams(decodedText.split('?')[1]);
-                name = urlParams.get('pn') || "Merchant";
-            }
-            
-            // Redirect to Payment Screen
-            location.href = `payment_chat.html?name=${encodeURIComponent(name)}&mobile=QR_Payment`;
-        }
+            }).catch(err => console.log("Stop failed", err));
+        };
 
-        function onScanFailure(error) {
-            // handle scan failure, usually better to ignore and keep scanning.
-            // console.warn(`Code scan error = ${error}`);
-        }
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-        // Initialize Scanner
-        let html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", 
-            { 
-                fps: 10, 
-                qrbox: {width: 250, height: 250},
-                aspectRatio: 1.0
-            },
-            /* verbose= */ false);
-
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-        
-        document.getElementById('status').innerText = "Point camera at a QR Code";
+        // 5. AUTO-START (Force Environment/Back Camera)
+        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+        .catch(err => {
+            document.getElementById('status').innerText = "Camera Error: " + err;
+            document.getElementById('status').style.color = "red";
+        });
     </script>
+
 </body>
 </html>
