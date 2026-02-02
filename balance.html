@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Balance</title>
+  <link rel="stylesheet" href="Home Screen.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: #f1f3f6; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+    .header { background: #5f259f; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; }
+    .bank-list { padding: 20px; }
+    .bank-item {
+        background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px;
+    }
+    .bank-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .bank-info { display: flex; align-items: center; gap: 15px; }
+    .bank-logo { width: 40px; }
+    
+    .btn-check {
+        color: #5f259f; font-weight: bold; font-size: 14px; cursor: pointer; padding: 8px 15px;
+        background: #f3e5f5; border-radius: 20px; border: none; outline: none; transition: 0.3s;
+    }
+    .btn-add { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+      <h3>Check Balance</h3>
+  </div>
+
+  <div class="bank-list">
+      <div class="bank-item">
+          <div class="bank-row">
+              <div class="bank-info">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/1200px-SBI-logo.svg.png" class="bank-logo">
+                  <div>
+                      <div style="font-weight: bold;">State Bank of India</div>
+                      <div style="font-size: 12px; color: #888;">Account ...8829</div>
+                  </div>
+              </div>
+              <button class="btn-check" id="btnSBI" onclick="checkBal('SBI')">Check Balance</button>
+          </div>
+      </div>
+
+      <div class="bank-item">
+          <div class="bank-row">
+              <div class="bank-info">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/HDFC_Bank_Logo.svg/2560px-HDFC_Bank_Logo.svg.png" class="bank-logo">
+                  <div>
+                      <div style="font-weight: bold;">HDFC Bank</div>
+                      <div style="font-size: 12px; color: #888;">Account ...1234</div>
+                  </div>
+              </div>
+              <button class="btn-check" id="btnHDFC" onclick="checkBal('HDFC')">Check Balance</button>
+          </div>
+      </div>
+  </div>
+<script>
+  async function checkBal(bank) {
+      const btn = document.getElementById(bank === 'SBI' ? 'btnSBI' : 'btnHDFC');
+      const apiBankName = bank; 
+
+      // 1. Add Money Logic
+      if (btn.innerText.includes("++ Add Money")) {
+          try {
+              const res = await fetch('/api/add-money', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ bank: apiBankName })
+              });
+              const data = await res.json();
+              
+              if(data.success) {
+                  alert("Money added successfully! 🤑");
+                  const fmtBal = (50000).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+                  btn.innerText = fmtBal;
+                  btn.style.background = "#00b661"; btn.style.color = "white";
+                  btn.classList.remove("btn-add");
+              }
+          } catch(err) { alert("Server Error"); }
+          return;
+      }
+
+      // 2. Check Balance Logic
+      const pin = prompt("Enter UPI PIN for " + bank + ":");
+      
+      if(pin === "1234") {
+          btn.innerText = "Fetching...";
+          
+          try {
+              // Relative URL
+              const response = await fetch('/api/user');
+              const user = await response.json();
+              
+              let bal = bank === 'HDFC' ? user.walletBalance_HDFC : user.walletBalance;
+
+              if (bal <= 0) {
+                  btn.innerHTML = "₹0 <br><span style='font-size:11px'>++ Add Money</span>";
+                  btn.classList.add("btn-add");
+              } else {
+                  btn.innerText = bal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+                  btn.style.background = "#00b661";
+                  btn.style.color = "white";
+              }
+          } catch (error) {
+              btn.innerText = "Error";
+              alert("Could not connect to server.");
+          }
+      } else {
+          alert("Wrong PIN");
+      }
+  }
+</script>
+</body>
+</html>

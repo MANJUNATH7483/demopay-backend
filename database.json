@@ -1,0 +1,29 @@
+{
+  "user": {
+    "name": "User Name",
+    "mobile": "9876543210",
+    "pin": "1234",
+    "walletBalance": 49900.0,
+    "walletBalance_HDFC": 49000.0
+  },
+  "transactions": [
+    {
+      "id": "T1770057168",
+      "name": "Unknown",
+      "amount": 1000.0,
+      "bank": "HDFC",
+      "time": "03/02/2026, 12:02 AM",
+      "status": "Paid",
+      "description": "Payment to Unknown"
+    },
+    {
+      "id": "T1770055882",
+      "name": "Rahul",
+      "amount": 100.0,
+      "bank": "SBI",
+      "time": "02/02/2026, 11:41 PM",
+      "status": "Paid",
+      "description": "Payment to Rahul"
+    }
+  ]
+}

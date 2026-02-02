@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity</title>
+  <link rel="stylesheet" href="Home Screen.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="header">
+      <i class="fa-solid fa-arrow-left back-btn" onclick="history.back()"></i>
+      <h3>Electricity Bill</h3>
+  </div>
+  <div style="padding: 20px;">
+      <p style="font-size:12px; font-weight:bold; color:#666;">CONSUMER NUMBER</p>
+      <input type="text" id="val" class="input-box" placeholder="Example: 1234567890">
+      <button class="btn-primary" onclick="go()">Fetch Bill</button>
+  </div>
+  <script>
+      function go(){
+          const v = document.getElementById('val').value;
+          if(v.length>5) {
+              const randomBill = Math.floor(Math.random()*2000)+100;
+              // Pass the random bill amount to payment chat
+              location.href=`payment_chat.html?mobile=BILL-${v}&name=Electricity Board&amt=${randomBill}`;
+          } else {
+              alert("Enter valid Consumer Number");
+          }
+      }
+  </script>
+</body>
+</html>

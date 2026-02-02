@@ -1,0 +1,67 @@
+/* --- STANDARD DESIGN SYSTEM --- */
+:root {
+    --primary: #5f259f; /* PhonePe Purple */
+    --bg-color: #f1f3f6; /* Light Grey Page Background */
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --green: #00b661;
+}
+
+body {
+    margin: 0; background-color: var(--bg-color); color: var(--text-color);
+    font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; min-height: 100vh;
+}
+
+/* PURPLE HEADER */
+.header {
+    background: var(--primary); color: white;
+    padding: 15px; display: flex; align-items: center; gap: 15px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.back-btn { font-size: 20px; cursor: pointer; color: white; background: none; border: none; }
+
+/* STANDARD CARDS */
+.card {
+    background: white; border-radius: 10px;
+    padding: 15px; margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* GRID ICONS (Home Screen) */
+.grid-item {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    font-size: 11px; text-align: center; color: #333; cursor: pointer;
+}
+.icon-circle {
+    width: 45px; height: 45px; border-radius: 15px;
+    border: 1px solid #e0e0e0; background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: var(--primary);
+}
+
+/* INPUT FIELDS */
+.input-box {
+    width: 100%; padding: 15px; border: 1px solid #ddd;
+    border-radius: 5px; outline: none; font-size: 16px;
+    box-sizing: border-box; background: white; margin-bottom: 20px;
+}
+.input-box:focus { border-color: var(--primary); }
+
+/* MAIN BUTTON */
+.btn-primary {
+    width: 100%; padding: 15px; border-radius: 25px;
+    background: var(--primary); color: white; font-weight: bold; font-size: 16px;
+    border: none; cursor: pointer; text-align: center;
+}
+.btn-primary:active { background: #4a1c7a; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; height: 60px;
+    background: white; display: flex; justify-content: space-around; align-items: center;
+    border-top: 1px solid #eee; font-size: 10px; color: #666;
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }

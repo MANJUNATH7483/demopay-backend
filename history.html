@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+      body{margin:0; font-family:sans-serif; background:#f1f3f6;} 
+      .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px; align-items: center;} 
+      .card{background:white; padding:15px; margin:10px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+      .amount-neg { color: #333; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="location.href='Home Screen.html'" style="cursor:pointer;"></i>
+      <h3>History</h3>
+  </div>
+  <div id="list" style="padding-top: 10px;"></div>
+  
+<script>
+  async function loadHistory() {
+      const list = document.getElementById('list');
+      list.innerHTML = "<p style='text-align:center; padding:20px;'>Loading transactions...</p>";
+
+      try {
+          // Relative URL
+          const response = await fetch('/api/history');
+          const transactions = await response.json();
+
+          list.innerHTML = ""; 
+
+          if(transactions.length === 0) {
+              list.innerHTML = "<div style='text-align:center; padding:40px; color:#888;'><i class='fa-regular fa-clock' style='font-size:40px; margin-bottom:10px;'></i><br>No transactions yet</div>";
+          } else {
+              transactions.forEach(i => {
+                  const fmtAmt = parseFloat(i.amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+                  
+                  list.innerHTML += `
+                  <div class='card'>
+                      <div>
+                          <b style="font-size:14px; color:#333;">${i.name}</b><br>
+                          <small style="color:#888; font-size:11px;">${i.time} • ${i.bank || 'UPI'}</small>
+                      </div>
+                      <div class="amount-neg">- ${fmtAmt}</div>
+                  </div>`;
+              });
+          }
+      } catch (error) {
+          list.innerHTML = "<p style='text-align:center; color:red;'>Server Offline</p>";
+      }
+  }
+  loadHistory();
+</script>
+</body>
+</html>

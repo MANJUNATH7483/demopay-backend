@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recharge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+      body{margin:0; font-family:sans-serif; background:#f1f3f6;} 
+      .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px; align-items: center;} 
+      .card{background:white; padding:15px; margin:15px; border-radius:10px; cursor:pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+      .card:active { background: #f9f9f9; transform: scale(0.98); }
+  </style>
+</head>
+<body>
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor: pointer;"></i>
+      <h3>Recharge</h3>
+  </div>
+  <div style="padding:15px;">
+      <input type="text" placeholder="Enter Mobile Number" style="width:100%; padding:15px; box-sizing:border-box; margin-bottom:20px; border:1px solid #ddd; border-radius:8px; outline:none;">
+      
+      <div style="font-size:12px; color:#666; font-weight:bold; margin-bottom:10px;">RECOMMENDED PACKS</div>
+
+      <div class="card" onclick="pay(299)">
+          <div style="display:flex; justify-content:space-between;">
+              <b style="font-size:18px;">₹299</b>
+              <span style="background:#5f259f; color:white; font-size:10px; padding:2px 6px; border-radius:4px;">BEST SELLER</span>
+          </div>
+          <span style="font-size:12px; color:#666; margin-top:5px; display:block;">1.5GB/Day • 28 Days • Unlimited Calls</span>
+      </div>
+
+      <div class="card" onclick="pay(719)">
+          <b style="font-size:18px;">₹719</b><br>
+          <span style="font-size:12px; color:#666; margin-top:5px; display:block;">2GB/Day • 84 Days • Disney+ Hotstar</span>
+      </div>
+      
+      <div class="card" onclick="pay(2999)">
+          <b style="font-size:18px;">₹2,999</b><br>
+          <span style="font-size:12px; color:#666; margin-top:5px; display:block;">2.5GB/Day • 365 Days • Long Term</span>
+      </div>
+  </div>
+
+  <script>
+      function pay(a){
+          // Sends Amount automatically to payment page
+          location.href=`payment_chat.html?mobile=JIO-PREPAID&name=Jio Recharge&amt=${a}`;
+      }
+  </script>
+</body>
+</html>

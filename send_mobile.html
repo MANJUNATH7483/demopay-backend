@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Money</title>
+  <link rel="stylesheet" href="Home Screen.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="background: white;">
+
+  <div class="header-simple">
+    <div style="display: flex; align-items: center; gap: 15px; padding: 15px;">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()" style="font-size: 20px; cursor: pointer;"></i>
+      <h2 style="margin: 0; font-size: 18px;">Select Contact</h2>
+    </div>
+  </div>
+
+  <div class="container" style="padding: 0 15px 15px;">
+    <div style="background:#f5f5f5; border-radius:25px; padding:10px 15px; display:flex; gap:10px; align-items:center;">
+      <i class="fa-solid fa-magnifying-glass" style="color:#888;"></i>
+      <input type="text" placeholder="Search number or name" style="border:none; background:transparent; width:100%; outline:none;">
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer;" onclick="location.href='enter_mobile.html'">
+    <div style="width: 45px; height: 45px; border-radius: 50%; border: 1px solid #5f259f; color: #5f259f; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+    <div>
+        <h4 style="margin:0; color:#5f259f;">New Mobile Number</h4>
+    </div>
+  </div>
+
+  <div class="section-title" style="padding: 15px 15px 5px; color: #666; font-size: 13px; font-weight: bold;">RECENTS</div>
+
+  <div style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer;" onclick="location.href='payment_chat.html?mobile=9876543210&name=Rahul'">
+    <div style="width: 45px; height: 45px; border-radius: 16px; background: #ef5350; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">R</div>
+    <div>
+        <h4 style="margin:0;">Rahul Sharma</h4>
+        <p style="margin:0; font-size:12px; color:#666;">+91 98765 43210</p>
+    </div>
+  </div>
+
+</body>
+</html>

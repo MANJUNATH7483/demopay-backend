@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan QR</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: black; margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* HEADER with Back Button */
+    .header {
+        position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
+        z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-sizing: border-box; color: white; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    }
+    
+    .back-btn {
+        width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        backdrop-filter: blur(5px); transition: 0.2s;
+    }
+    .back-btn:active { background: rgba(255,255,255,0.4); }
+
+    /* The camera container */
+    #reader { width: 100%; height: 100%; background: black; object-fit: cover; }
+    
+    /* Hide some default library branding text */
+    #reader__dashboard_section_csr span { display: none !important; }
+    
+    .instruction {
+        position: absolute; bottom: 80px; width: 100%; text-align: center;
+        color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+    
+    .scanner-frame {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 250px; height: 250px; border: 2px solid rgba(255,255,255,0.3); border-radius: 20px;
+        pointer-events: none;
+    }
+    .scanner-line {
+        width: 100%; height: 2px; background: #00b661; box-shadow: 0 0 10px #00b661;
+        position: absolute; top: 0; animation: scanAnim 2s infinite linear;
+    }
+    @keyframes scanAnim { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+      <div class="back-btn" onclick="stopAndBack()">
+          <i class="fa-solid fa-arrow-left" style="font-size: 20px;"></i>
+      </div>
+      <span style="font-weight: 600; letter-spacing: 0.5px;">Scan & Pay</span>
+      <div class="back-btn" style="opacity: 0.5;"> <i class="fa-solid fa-bolt"></i>
+      </div>
+  </div>
+
+  <div class="scanner-frame"><div class="scanner-line"></div></div>
+
+  <div id="reader"></div>
+  
+  <div class="instruction">Point camera at any UPI QR Code</div>
+
+  <script>
+    let html5QrcodeScanner;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // 1. Stop scanning
+        if(html5QrcodeScanner) { 
+            html5QrcodeScanner.clear().catch(error => console.error("Failed to clear", error));
+        }
+
+        // 2. Parse Data
+        let upiID = "MERCHANT-UPI";
+        let payeeName = "Shop Merchant";
+        let amount = "";
+
+        // Intelligent Parsing for UPI Links (upi://pay?pa=...)
+        if (decodedText.startsWith("upi://")) {
+            try {
+                const url = new URL(decodedText);
+                const params = new URLSearchParams(url.search);
+                if(params.has('pa')) upiID = params.get('pa'); 
+                if(params.has('pn')) payeeName = params.get('pn');
+                if(params.has('am')) amount = params.get('am');
+                payeeName = decodeURIComponent(payeeName); // Fix %20 spaces
+            } catch(e) { console.log("URL Parse Error"); }
+        } else {
+            upiID = decodedText; // Fallback for simple text QRs
+        }
+
+        // 3. Redirect
+        let redirectUrl = `payment_chat.html?mobile=${encodeURIComponent(upiID)}&name=${encodeURIComponent(payeeName)}`;
+        if(amount) redirectUrl += `&amt=${amount}`;
+        location.href = redirectUrl;
+    }
+
+    function onScanFailure(error) {
+        // console.warn(`Code scan error = ${error}`);
+    }
+
+    function startScanner() {
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+            false
+        );
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }
+    
+    // Start Camera immediately
+    startScanner();
+
+    // Safe Back Navigation (Stops Camera First)
+    function stopAndBack() {
+        if(html5QrcodeScanner) {
+            html5QrcodeScanner.clear().then(() => {
+                location.href = "Home Screen.html";
+            }).catch(() => {
+                location.href = "Home Screen.html";
+            });
+        } else {
+            location.href = "Home Screen.html";
+        }
+    }
+  </script>
+</body>
+</html>

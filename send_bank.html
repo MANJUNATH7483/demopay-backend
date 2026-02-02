@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send to Bank</title>
+  <link rel="stylesheet" href="Home Screen.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: #f1f3f6; font-family: 'Segoe UI', sans-serif; }
+    .header { background: #5f259f; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; }
+    .form-container { padding: 20px; }
+    .input-group { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
+    .label { font-size: 11px; color: #5f259f; font-weight: bold; margin-bottom: 5px; display: block; }
+    .input-field { width: 100%; border: none; outline: none; font-size: 16px; font-weight: 500; color: #333; }
+    .btn-confirm {
+        position: fixed; bottom: 20px; left: 5%; width: 90%;
+        background: #ccc; color: white; padding: 15px; border: none; border-radius: 25px;
+        font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s;
+    }
+    .btn-active { background: #5f259f; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+      <h3>Enter Bank Details</h3>
+  </div>
+
+  <div class="form-container">
+      <div class="input-group">
+          <span class="label">ACCOUNT NUMBER</span>
+          <input type="tel" class="input-field" placeholder="Enter Account Number" oninput="validate()" id="accNum">
+      </div>
+
+      <div class="input-group">
+          <span class="label">IFSC CODE</span>
+          <input type="text" class="input-field" placeholder="e.g. SBIN0001234" oninput="validate()" style="text-transform: uppercase;" id="ifsc">
+      </div>
+
+      <div class="input-group">
+          <span class="label">ACCOUNT HOLDER NAME</span>
+          <input type="text" class="input-field" placeholder="Enter Name" oninput="validate()" id="holderName">
+      </div>
+  </div>
+
+  <button class="btn-confirm" id="btnNext" onclick="proceed()">CONFIRM</button>
+
+  <script>
+      function validate() {
+          const acc = document.getElementById('accNum').value;
+          const ifsc = document.getElementById('ifsc').value;
+          const name = document.getElementById('holderName').value;
+          const btn = document.getElementById('btnNext');
+
+          if(acc.length > 5 && ifsc.length > 4 && name.length > 2) {
+              btn.classList.add('btn-active');
+          } else {
+              btn.classList.remove('btn-active');
+          }
+      }
+
+      function proceed() {
+          const btn = document.getElementById('btnNext');
+          if(btn.classList.contains('btn-active')) {
+              const name = document.getElementById('holderName').value;
+              // Redirects to payment chat with special BANK tag
+              location.href = `payment_chat.html?mobile=BANK-TRANSFER&name=${name}`;
+          }
+      }
+  </script>
+</body>
+</html>

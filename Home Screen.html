@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DemoPay Home</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    /* GLOBAL STYLES */
+    body {
+      margin: 0; background-color: #f1f3f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding-bottom: 80px; -webkit-tap-highlight-color: transparent;
+    }
+
+    /* HEADER */
+    .header {
+      background-color: #5f259f; padding: 15px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: white; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    /* NEW: Explicit Profile Avatar Style */
+    .profile-btn {
+        display: flex; align-items: center; gap: 10px; 
+        cursor: pointer; /* Shows hand icon on hover */
+    }
+    .user-avatar-small {
+        width: 35px; height: 35px; background: #ffc107; color: #5f259f; 
+        border-radius: 50%; /* Circle */
+        display: flex; align-items: center; justify-content: center; 
+        font-weight: bold; font-size: 18px; border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .header-icons { display: flex; gap: 18px; font-size: 18px; }
+
+    /* BLUE BANNER */
+    .banner-container { background: #5f259f; padding: 0 15px 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+    .promo-banner {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white; height: 120px; border-radius: 12px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer;
+    }
+
+    /* ICONS GRID */
+    .container { padding: 15px; }
+    .section-title { font-size: 15px; font-weight: 700; color: #333; margin: 10px 0 15px; }
+    .icon-grid {
+        background: white; border-radius: 15px; padding: 20px 10px;
+        display: flex; justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px;
+    }
+    .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 25%; cursor: pointer; }
+    .icon-circle {
+        width: 45px; height: 45px; background-color: #5f259f; border-radius: 15px;
+        display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;
+    }
+    .icon-circle.scan-btn { background-color: #00b661; }
+    .icon-circle.outline { background-color: white; border: 1px solid #eee; color: #5f259f; }
+    .icon-label { font-size: 11px; color: #333; text-align: center; font-weight: 500; }
+
+    /* MINI CARDS */
+    .mini-cards-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .mini-card {
+        flex: 1; background: white; padding: 12px; border-radius: 10px;
+        display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: bold; color: #333;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+        position: fixed; bottom: 0; width: 100%; background: white; height: 60px;
+        display: flex; justify-content: space-around; align-items: center;
+        border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 200;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #888; cursor: pointer; width: 20%; }
+    .nav-item.active { color: #5f259f; font-weight: bold; }
+    .nav-qr {
+        width: 50px; height: 50px; background: #5f259f; color: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 22px;
+        margin-top: -25px; border: 4px solid #f1f3f6; box-shadow: 0 4px 10px rgba(95, 37, 159, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="profile-btn" onclick="go('account.html')">
+      <div class="user-avatar-small">U</div>
+      <div>
+        <h4 style="margin: 0; font-size: 15px;">DemoPay</h4>
+        <span style="font-size:11px; opacity:0.9;">India <i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+    </div>
+
+    <div class="header-icons">
+      <i class="fa-solid fa-qrcode" onclick="go('scan.html')"></i>
+      <i class="fa-regular fa-bell" onclick="go('notifications.html')"></i>
+      <i class="fa-regular fa-circle-question"></i>
+    </div>
+  </header>
+
+  <div class="banner-container">
+    <div class="promo-banner" onclick="alert('Promo Clicked!')">
+       <div style="font-size: 24px; font-weight: bold;">Flat 12% OFF</div>
+       <div style="font-size: 14px; opacity: 0.9;">on your 1st flight ✈️</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">Money Transfers</div>
+    
+    <div class="icon-grid">
+      <div class="icon-item" onclick="go('scan.html')">
+        <div class="icon-circle scan-btn"><i class="fa-solid fa-qrcode"></i></div>
+        <div class="icon-label">Scan any<br>QR Code</div>
+      </div>
+      <div class="icon-item" onclick="go('send_mobile.html')">
+        <div class="icon-circle"><i class="fa-solid fa-phone"></i></div>
+        <div class="icon-label">To Mobile<br>Number</div>
+      </div>
+      <div class="icon-item" onclick="go('send_bank.html')">
+        <div class="icon-circle"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="icon-label">To Bank &<br>Self A/c</div>
+      </div>
+      <div class="icon-item" onclick="go('balance.html')">
+        <div class="icon-circle"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <div class="icon-label">Check<br>Balance</div>
+      </div>
+    </div>
+
+    <div class="mini-cards-row">
+      <div class="mini-card" onclick="alert('Referral Code: DEMO123')">
+        <i class="fa-solid fa-gift" style="color: orange; font-size: 18px;"></i><span>Refer -> ₹200</span>
+      </div>
+      <div class="mini-card" onclick="alert('Gold Price: ₹6200/g')">
+        <i class="fa-solid fa-coins" style="color: gold; font-size: 18px;"></i><span>Start Gold SIP</span>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="section-title">Recharge & Pay Bills</div>
+        <span style="font-size:12px; color:#5f259f; font-weight:bold;">View All</span>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-item" onclick="go('mobile_recharge.html')">
+        <div class="icon-circle outline"><i class="fa-solid fa-mobile-screen"></i></div>
+        <div class="icon-label">Mobile<br>Recharge</div>
+      </div>
+      <div class="icon-item" onclick="go('fastag.html')">
+        <div class="icon-circle outline"><i class="fa-solid fa-car"></i></div>
+        <div class="icon-label">FASTag<br>Recharge</div>
+      </div>
+      <div class="icon-item" onclick="go('electricity.html')">
+        <div class="icon-circle outline"><i class="fa-regular fa-lightbulb"></i></div>
+        <div class="icon-label">Electricity<br>Bill</div>
+      </div>
+      <div class="icon-item" onclick="go('loan.html')">
+        <div class="icon-circle outline"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div class="icon-label">Loan<br>Repayment</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="go('Home Screen.html')"><i class="fa-solid fa-house" style="font-size: 20px;"></i><span>Home</span></div>
+    <div class="nav-item"><i class="fa-solid fa-magnifying-glass" style="font-size: 20px;"></i><span>Search</span></div>
+    <div class="nav-qr" onclick="go('scan.html')"><i class="fa-solid fa-qrcode"></i></div>
+    <div class="nav-item" onclick="go('notifications.html')">
+      <i class="fa-regular fa-bell" style="font-size: 20px;"></i>
+      <span>Alerts</span>
+    </div>
+    <div class="nav-item" onclick="go('history.html')"><i class="fa-solid fa-clock-rotate-left" style="font-size: 20px;"></i><span>History</span></div>
+  </nav>
+
+  <script>
+    if (!localStorage.getItem("walletBalance")) localStorage.setItem("walletBalance", "50000");
+    if (!localStorage.getItem("walletBalance_HDFC")) localStorage.setItem("walletBalance_HDFC", "50000");
+    function go(url) { location.href = url; }
+  </script>
+</body>
+</html>

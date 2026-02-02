@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <link rel="stylesheet" href="Home Screen.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: white; font-family: 'Segoe UI', sans-serif; }
+    .header { background: #5f259f; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; }
+    .notif-list { display: flex; flex-direction: column; }
+    .notif-item { padding: 20px 15px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 15px; align-items: flex-start; }
+    .n-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+    .n-content h4 { margin: 0 0 5px; font-size: 14px; color: #333; }
+    .n-content p { margin: 0; font-size: 13px; color: #666; line-height: 1.4; }
+    .n-time { font-size: 11px; color: #999; margin-top: 5px; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor: pointer;"></i>
+      <h3>Notifications</h3>
+  </div>
+
+  <div class="notif-list">
+      <div class="notif-item">
+          <div class="n-icon" style="background: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-gift"></i></div>
+          <div class="n-content">
+              <h4>Cashback Received</h4>
+              <p>Woohoo! You received ₹50 cashback. Scratch card added.</p>
+              <span class="n-time">2 hours ago</span>
+          </div>
+      </div>
+      <div class="notif-item">
+          <div class="n-icon" style="background: #e3f2fd; color: #1565c0;"><i class="fa-solid fa-bolt"></i></div>
+          <div class="n-content">
+              <h4>Electricity Bill Due</h4>
+              <p>Your BESCOM bill of ₹850 is due. Pay now.</p>
+              <span class="n-time">Yesterday</span>
+          </div>
+      </div>
+  </div>
+</body>
+</html>
