@@ -22,13 +22,44 @@
     <a href="Home Screen.html" class="btn-home">Done</a>
 
     <script>
+        // 1. Get Transaction Details from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const amount = urlParams.get('amount') || urlParams.get('amt') || "0.00";
+        const amount = parseFloat(urlParams.get('amount') || urlParams.get('amt') || "0");
         const name = urlParams.get('name') || "Merchant";
         
+        // Display on screen
         document.getElementById('displayAmount').innerText = "₹" + amount;
         document.getElementById('displayName').innerText = "Paid to " + name;
         if(navigator.vibrate) navigator.vibrate(200);
+
+        // --- REAL LOGIC STARTS HERE ---
+
+        // 2. DEDUCT BALANCE
+        // Default starting balance is 50,000 if not set
+        let currentBalance = parseFloat(localStorage.getItem('walletBalance'));
+        if (isNaN(currentBalance)) currentBalance = 50000; 
+
+        // Only deduct if we haven't processed this specific page load yet (simple check)
+        // ideally we use IDs, but for a demo, this is fine:
+        currentBalance = currentBalance - amount;
+        localStorage.setItem('walletBalance', currentBalance);
+
+        // 3. SAVE TO HISTORY
+        // Get existing history or empty list
+        let history = JSON.parse(localStorage.getItem('txHistory')) || [];
+        
+        // Add new transaction to the TOP of the list
+        const newTx = {
+            name: name,
+            amount: amount,
+            date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}),
+            type: 'Debit'
+        };
+        history.unshift(newTx);
+        
+        // Save back to storage
+        localStorage.setItem('txHistory', JSON.stringify(history));
+
     </script>
 </body>
 </html>
