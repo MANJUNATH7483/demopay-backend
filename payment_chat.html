@@ -55,9 +55,15 @@
   <div id="bankSheet">
       <h3 style="margin:0 0 20px 0;">Total Payable: <span id="payAmount">₹0</span></h3>
       <div style="font-size:12px; color:#666; margin-bottom:10px;">DEBIT FROM</div>
+      
       <div class="bank-option" onclick="openPinScreen('SBI')"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/1200px-SBI-logo.svg.png" style="width:30px;">
           <div style="flex:1;"><div style="font-weight:bold;">State Bank of India</div><div style="font-size:12px;">Account ending in 8829</div></div>
           <i class="fa-solid fa-circle-check" style="color:#5f259f; font-size:20px;"></i>
+      </div>
+
+      <div class="bank-option" onclick="openPinScreen('HDFC')"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/HDFC_Bank_Logo.svg/2560px-HDFC_Bank_Logo.svg.png" style="width:30px;">
+          <div style="flex:1;"><div style="font-weight:bold;">HDFC Bank</div><div style="font-size:12px;">Account ending in 1234</div></div>
+          <i class="fa-regular fa-circle" style="color:#ccc; font-size:20px;"></i>
       </div>
   </div>
 
@@ -127,7 +133,12 @@
       }, 1500);
     }
 
-    if(preFilledAmt){ input.value=preFilledAmt; checkInput(); setTimeout(()=>{handleAction();},500); }
+    // 🚀 FIXED: Shows amount but WAITS for you to click PAY
+    if(preFilledAmt){ 
+        input.value=preFilledAmt; 
+        checkInput(); 
+        // Deleted the "setTimeout" line that was auto-clicking
+    }
   </script>
 </body>
 </html>
