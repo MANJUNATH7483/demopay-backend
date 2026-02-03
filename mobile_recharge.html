@@ -5,75 +5,44 @@
     <title>Recharge</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body{margin:0; font-family:sans-serif; background:#f1f3f6;} .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px; align-items: center;} 
-        .card{background:white; padding:15px; margin:15px; border-radius:10px; cursor:pointer;}
+        body { margin: 0; font-family: sans-serif; background: #f1f3f6; } 
+        .header { background: #5f259f; padding: 15px; color: white; display: flex; gap: 15px; align-items: center; } 
+        .card { background: white; padding: 15px; margin: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card:active { transform: scale(0.98); background-color: #f9f9f9; }
     </style>
 </head>
 <body>
-    <div class="header"><i class="fa-solid fa-arrow-left" onclick="history.back()"></i><h3>Recharge</h3></div>
-    <div style="padding:15px;">
-        <input type="text" placeholder="Mobile Number" style="width:100%; padding:15px; margin-bottom:20px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box;">
-        <div class="card" onclick="pay(299)"><b>₹299</b><br><span style="font-size:12px; color:#666;">1.5GB/Day • 28 Days</span></div>
-        <div class="card" onclick="pay(719)"><b>₹719</b><br><span style="font-size:12px; color:#666;">2GB/Day • 84 Days</span></div>
+    <div class="header">
+        <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor: pointer;"></i>
+        <h3>Recharge</h3>
     </div>
-   <script>
-    let amountToPay=0, pin="", correctPin="1234", selectedBankName="SBI", isPaymentMode=false;
-    const urlParams=new URLSearchParams(window.location.search);
-    const name=urlParams.get('name')||'Merchant', mobile=urlParams.get('mobile')||'...', preFilledAmt=urlParams.get('amt');
     
-    document.getElementById('uName').innerText=name; 
-    document.getElementById('uMobile').innerText="+91 "+mobile; 
-    document.getElementById('uAvatar').innerText=name.charAt(0);
-    const input=document.getElementById('inputBox'), btn=document.getElementById('actionButton');
+    <div style="padding:15px;">
+        <input type="text" placeholder="Enter Mobile Number" style="width:100%; padding:15px; margin-bottom:20px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box; outline: none;">
+        
+        <p style="font-size: 12px; color: #666; font-weight: bold;">POPULAR PLANS</p>
 
-    function checkInput(){
-      const val=input.value.trim();
-      if(val.length>0 && /^[0-9]+(\.\d+)?$/.test(val)){ isPaymentMode=true; btn.className="action-btn btn-pay"; btn.innerHTML=`Pay ₹${val}`; }
-      else{ isPaymentMode=false; btn.className="action-btn btn-send"; btn.innerHTML=`<i class="fa-solid fa-paper-plane"></i>`; }
-    }
+        <div class="card" onclick="pay(299)">
+            <b style="font-size: 18px;">₹299</b><br>
+            <span style="font-size:12px; color:#666;">1.5GB/Day • 28 Days • Unlimited Calls</span>
+        </div>
 
-    function handleAction(){
-      const val=input.value.trim(); if(!val)return;
-      if(isPaymentMode){ amountToPay=parseFloat(val); document.getElementById('payAmount').innerText="₹"+amountToPay; document.getElementById('bgOverlay').style.display="block"; setTimeout(()=>document.getElementById('bankSheet').classList.add('sheet-visible'),10); }
-      else{ sendChatMessage(val); input.value=""; checkInput(); }
-    }
+        <div class="card" onclick="pay(719)">
+            <b style="font-size: 18px;">₹719</b><br>
+            <span style="font-size:12px; color:#666;">2GB/Day • 84 Days • Disney+ Hotstar</span>
+        </div>
 
-    function closeBankSheet(){ document.getElementById('bankSheet').classList.remove('sheet-visible'); setTimeout(()=>document.getElementById('bgOverlay').style.display="none",300); }
-    
-    function openPinScreen(bank){ 
-        closeBankSheet(); selectedBankName = bank; 
-        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank"; 
-        document.getElementById('pinAmt').innerText="₹"+amountToPay; 
-        document.getElementById('pinOverlay').style.display="flex"; pin=""; updateDots(); 
-    }
+        <div class="card" onclick="pay(2999)">
+            <b style="font-size: 18px;">₹2,999</b><br>
+            <span style="font-size:12px; color:#666;">2.5GB/Day • 365 Days • 5G Data</span>
+        </div>
+    </div>
 
-    function kp(n){ if(pin.length<4){pin+=n; updateDots();} }
-    function kd(){ pin=pin.slice(0,-1); updateDots(); }
-    function updateDots(){ for(let i=1;i<=4;i++) document.getElementById('d'+i).className=i<=pin.length?"p-dot p-filled":"p-dot"; }
-    
-    function submitPin(){ 
-        if(pin===correctPin){ 
-            document.getElementById('pinOverlay').style.display="none"; 
-            processPaymentFinal(amountToPay); input.value=""; checkInput(); 
-        } else { alert("WRONG PIN! Try 1234"); pin=""; updateDots(); } 
-    }
-
-    function sendChatMessage(m){ document.getElementById('chatList').innerHTML+=`<div class="bubble sent">${m}</div>`; }
-
-    function processPaymentFinal(a){
-      document.getElementById('chatList').innerHTML += `<div class="bubble paid"><div style="font-size:11px;color:#666;">Paying to ${name}</div><div class="amt-large">₹ ${a}</div><div style="font-size:11px;color:#888;">Processing...</div></div>`;
-      setTimeout(() => {
-          location.href = `success.html?amount=${a}&name=${encodeURIComponent(name)}&bank=${selectedBankName}`; 
-      }, 1500);
-    }
-
-    // 🚀 THE FIX IS HERE:
-    // We check for the amount, fill it in, update the button style, BUT WE DO NOT CLICK IT.
-    if(preFilledAmt){ 
-        input.value=preFilledAmt; 
-        checkInput(); 
-        // Deleted the "setTimeout" line that was auto-clicking
-    }
-  </script>
+    <script>
+        function pay(amount){ 
+            // This simply redirects to the Payment Chat with the amount
+            location.href = `payment_chat.html?mobile=Jio-Prepaid&name=Jio Recharge&amt=${amount}`; 
+        }
+    </script>
 </body>
 </html>
