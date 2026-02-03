@@ -20,7 +20,7 @@
         .profile-section { display: flex; align-items: center; margin-bottom: 20px; }
         .avatar { 
             width: 50px; height: 50px; 
-            background-color: #eab308; /* Yellow/Gold color like screenshot */
+            background-color: #eab308; /* Yellow/Gold color */
             color: white; 
             border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
@@ -38,10 +38,11 @@
             padding: 10px 15px; 
             display: flex; align-items: center; 
             margin-bottom: 15px; 
+            background: #fdfeff;
         }
         .currency { font-size: 24px; font-weight: bold; color: #333; margin-right: 10px; }
         .amount-input { 
-            border: none; outline: none; font-size: 24px; font-weight: bold; width: 100%; color: #333; 
+            border: none; outline: none; font-size: 24px; font-weight: bold; width: 100%; color: #333; background: transparent;
         }
         
         .message-box { 
@@ -52,20 +53,20 @@
         .message-input { border: none; outline: none; width: 100%; font-size: 14px; }
 
         /* Footer Button */
-        .footer { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .footer { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); box-sizing: border-box; }
         .pay-btn {
             background-color: #d1d5db; /* Grey initially */
             color: white; 
-            width: 90%; 
-            margin-left: 5%;
+            width: 100%; 
             padding: 15px; 
             border: none; 
             border-radius: 25px; 
             font-size: 16px; 
             font-weight: bold;
             text-align: center;
+            cursor: pointer;
         }
-        .pay-btn.active { background-color: #2563eb; cursor: pointer; } /* Blue when active */
+        .pay-btn.active { background-color: #2563eb; } /* Blue when active */
     </style>
 </head>
 <body>
@@ -78,7 +79,7 @@
 
     <div class="pay-card">
         <div class="profile-section">
-            <div class="avatar" id="avatar-circle">TK</div>
+            <div class="avatar" id="avatar-circle">U</div>
             <div class="user-details">
                 <h3 id="recipient-name">Loading...</h3>
                 <p id="banking-name">Banking name: <span id="upi-id">...</span> <span class="verified">✔</span></p>
@@ -100,7 +101,7 @@
     </div>
 
     <script>
-        // 1. Get Data from URL (sent by the Scanner)
+        // 1. Get Data from URL (sent by the Scanner or Mobile Input)
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name') || "Merchant";
         const mobile = urlParams.get('mobile') || "9876543210@upi";
@@ -132,9 +133,8 @@
             const amount = document.getElementById('amount').value;
             if(!amount) return;
             
-            // Go to password screen or success screen
-            // Passing the details along
-            window.location.href = `send_bank.html?amount=${amount}&name=${encodeURIComponent(name)}`;
+            // 🚀 FIXED: Redirects to Success Screen instead of Bank Details
+            window.location.href = `success.html?amount=${amount}&name=${encodeURIComponent(name)}`;
         }
     </script>
 
