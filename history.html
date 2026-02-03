@@ -1,56 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>History</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-      body{margin:0; font-family:sans-serif; background:#f1f3f6;} 
-      .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px; align-items: center;} 
-      .card{background:white; padding:15px; margin:10px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
-      .amount-neg { color: #333; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f1f3f6; }
+        
+        /* Header */
+        .header { background: #5f259f; padding: 15px; color: white; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header h3 { margin: 0; font-weight: 500; }
+        
+        /* Search Bar (Visual Only) */
+        .search-container { background: #5f259f; padding: 0 15px 15px 15px; }
+        .search-box { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px 15px; color: white; display: flex; align-items: center; font-size: 14px; }
+        .search-box i { margin-right: 10px; opacity: 0.7; }
+        
+        /* List Container */
+        .history-list { padding: 10px; }
+        
+        /* Transaction Card */
+        .tx-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .tx-left { display: flex; gap: 15px; }
+        
+        /* Icon Box */
+        .icon-box {
+            width: 40px; height: 40px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #555;
+            font-size: 18px;
+        }
+        
+        .tx-details { display: flex; flex-direction: column; }
+        .tx-name { font-weight: bold; font-size: 14px; color: #333; margin-bottom: 4px; }
+        .tx-date { font-size: 11px; color: #888; }
+        
+        .tx-right { text-align: right; }
+        .tx-amount { font-weight: bold; font-size: 15px; color: #333; }
+        .tx-status { font-size: 10px; color: #666; margin-top: 2px; }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            margin-top: 50px;
+            color: #888;
+        }
+        .empty-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.3; }
+
+        /* Floating Delete Button (Optional) */
+        .btn-clear {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #ff4444; color: white;
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-      <i class="fa-solid fa-arrow-left" onclick="location.href='Home Screen.html'" style="cursor:pointer;"></i>
-      <h3>History</h3>
-  </div>
-  <div id="list" style="padding-top: 10px;"></div>
-  
-<script>
-  async function loadHistory() {
-      const list = document.getElementById('list');
-      list.innerHTML = "<p style='text-align:center; padding:20px;'>Loading transactions...</p>";
 
-      try {
-          // Relative URL
-          const response = await fetch('/api/history');
-          const transactions = await response.json();
+    <div class="header">
+        <i class="fa-solid fa-arrow-left" onclick="window.location.href='Home Screen.html'" style="cursor:pointer;"></i>
+        <h3>History</h3>
+    </div>
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i> Search by name or number
+        </div>
+    </div>
 
-          list.innerHTML = ""; 
+    <div class="history-list" id="listArea">
+        <div class="empty-state">
+            <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+            <p>No transactions yet</p>
+        </div>
+    </div>
 
-          if(transactions.length === 0) {
-              list.innerHTML = "<div style='text-align:center; padding:40px; color:#888;'><i class='fa-regular fa-clock' style='font-size:40px; margin-bottom:10px;'></i><br>No transactions yet</div>";
-          } else {
-              transactions.forEach(i => {
-                  const fmtAmt = parseFloat(i.amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
-                  
-                  list.innerHTML += `
-                  <div class='card'>
-                      <div>
-                          <b style="font-size:14px; color:#333;">${i.name}</b><br>
-                          <small style="color:#888; font-size:11px;">${i.time} • ${i.bank || 'UPI'}</small>
-                      </div>
-                      <div class="amount-neg">- ${fmtAmt}</div>
-                  </div>`;
-              });
-          }
-      } catch (error) {
-          list.innerHTML = "<p style='text-align:center; color:red;'>Server Offline</p>";
-      }
-  }
-  loadHistory();
-</script>
+    <div class="btn-clear" onclick="clearHistory()"><i class="fa-solid fa-trash"></i></div>
+
+    <script>
+        // 1. Load History from Phone Storage
+        // We use the key 'txHistory' which success.html saves to
+        const historyData = JSON.parse(localStorage.getItem('txHistory')) || [];
+        const listArea = document.getElementById('listArea');
+
+        // 2. Render List
+        if (historyData.length > 0) {
+            listArea.innerHTML = ""; // Clear the empty message
+            
+            historyData.forEach(tx => {
+                const card = `
+                    <div class="tx-card">
+                        <div class="tx-left">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </div>
+                            <div class="tx-details">
+                                <span class="tx-name">Paid to ${tx.name}</span>
+                                <span class="tx-date">${tx.date}</span>
+                            </div>
+                        </div>
+                        <div class="tx-right">
+                            <div class="tx-amount">- ₹${tx.amount}</div>
+                            <div class="tx-status">Debited from ...8829</div>
+                        </div>
+                    </div>
+                `;
+                listArea.innerHTML += card;
+            });
+        }
+
+        // 3. Clear History Function
+        function clearHistory() {
+            if(confirm("Delete all transaction history?")) {
+                localStorage.removeItem('txHistory');
+                location.reload(); // Refresh page to show empty state
+            }
+        }
+    </script>
+
 </body>
 </html>
