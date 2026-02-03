@@ -27,7 +27,7 @@
 <body>
 
   <div class="header">
-      <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+      <i class="fa-solid fa-arrow-left" onclick="window.location.href='Home Screen.html'" style="cursor: pointer;"></i>
       <h3>Check Balance</h3>
   </div>
 
@@ -58,29 +58,24 @@
           </div>
       </div>
   </div>
-<script>
-  async function checkBal(bank) {
-      const btn = document.getElementById(bank === 'SBI' ? 'btnSBI' : 'btnHDFC');
-      const apiBankName = bank; 
 
-      // 1. Add Money Logic
+<script>
+  function checkBal(bank) {
+      const btn = document.getElementById(bank === 'SBI' ? 'btnSBI' : 'btnHDFC');
+      const storageKey = bank === 'SBI' ? 'walletBalance' : 'walletBalance_HDFC';
+      const defaultBal = bank === 'SBI' ? 50000 : 125000; // HDFC gets more money just for fun
+
+      // 1. "Add Money" Logic (Refill)
       if (btn.innerText.includes("++ Add Money")) {
-          try {
-              const res = await fetch('/api/add-money', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ bank: apiBankName })
-              });
-              const data = await res.json();
-              
-              if(data.success) {
-                  alert("Money added successfully! 🤑");
-                  const fmtBal = (50000).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
-                  btn.innerText = fmtBal;
-                  btn.style.background = "#00b661"; btn.style.color = "white";
-                  btn.classList.remove("btn-add");
-              }
-          } catch(err) { alert("Server Error"); }
+          localStorage.setItem(storageKey, defaultBal); // Reset to full
+          alert("Money added successfully! 🤑");
+          
+          // Update UI immediately
+          const fmtBal = defaultBal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+          btn.innerText = fmtBal;
+          btn.style.background = "#00b661"; 
+          btn.style.color = "white";
+          btn.classList.remove("btn-add");
           return;
       }
 
@@ -90,27 +85,29 @@
       if(pin === "1234") {
           btn.innerText = "Fetching...";
           
-          try {
-              // Relative URL
-              const response = await fetch('/api/user');
-              const user = await response.json();
-              
-              let bal = bank === 'HDFC' ? user.walletBalance_HDFC : user.walletBalance;
+          // Fake Loading Delay
+          setTimeout(() => {
+              // Get Balance from Phone Storage
+              let bal = parseFloat(localStorage.getItem(storageKey));
 
+              // If new user, set default
+              if (isNaN(bal)) {
+                  bal = defaultBal;
+                  localStorage.setItem(storageKey, bal);
+              }
+
+              // Display Logic
               if (bal <= 0) {
                   btn.innerHTML = "₹0 <br><span style='font-size:11px'>++ Add Money</span>";
                   btn.classList.add("btn-add");
               } else {
                   btn.innerText = bal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
-                  btn.style.background = "#00b661";
+                  btn.style.background = "#00b661"; // Green
                   btn.style.color = "white";
               }
-          } catch (error) {
-              btn.innerText = "Error";
-              alert("Could not connect to server.");
-          }
+          }, 1000); // 1 Second wait
       } else {
-          alert("Wrong PIN");
+          alert("Wrong PIN! Try 1234");
       }
   }
 </script>
