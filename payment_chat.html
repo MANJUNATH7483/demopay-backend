@@ -41,7 +41,7 @@
 </head>
 <body>
   <div class="chat-header">
-    <i class="fa-solid fa-arrow-left" onclick="window.location.href='Home Screen.html'"></i>
+    <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor:pointer;"></i>
     <div class="user-avatar" id="uAvatar">U</div>
     <div style="flex: 1;"><h4 style="margin: 0;" id="uName">User</h4><span style="font-size: 11px;" id="uMobile">+91 ...</span></div>
   </div>
@@ -58,10 +58,6 @@
       <div class="bank-option" onclick="openPinScreen('SBI')"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/SBI-logo.svg/1200px-SBI-logo.svg.png" style="width:30px;">
           <div style="flex:1;"><div style="font-weight:bold;">State Bank of India</div><div style="font-size:12px;">Account ending in 8829</div></div>
           <i class="fa-solid fa-circle-check" style="color:#5f259f; font-size:20px;"></i>
-      </div>
-      <div class="bank-option" onclick="openPinScreen('HDFC')"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/HDFC_Bank_Logo.svg/2560px-HDFC_Bank_Logo.svg.png" style="width:30px;">
-          <div style="flex:1;"><div style="font-weight:bold;">HDFC Bank</div><div style="font-size:12px;">Account ending in 1234</div></div>
-          <i class="fa-regular fa-circle" style="color:#ccc; font-size:20px;"></i>
       </div>
   </div>
 
@@ -87,7 +83,6 @@
     document.getElementById('uName').innerText=name; 
     document.getElementById('uMobile').innerText="+91 "+mobile; 
     document.getElementById('uAvatar').innerText=name.charAt(0);
-    
     const input=document.getElementById('inputBox'), btn=document.getElementById('actionButton');
 
     function checkInput(){
@@ -105,12 +100,10 @@
     function closeBankSheet(){ document.getElementById('bankSheet').classList.remove('sheet-visible'); setTimeout(()=>document.getElementById('bgOverlay').style.display="none",300); }
     
     function openPinScreen(bank){ 
-        closeBankSheet(); 
-        selectedBankName = bank; // 'SBI' or 'HDFC'
-        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank (1234)"; 
+        closeBankSheet(); selectedBankName = bank; 
+        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank"; 
         document.getElementById('pinAmt').innerText="₹"+amountToPay; 
-        document.getElementById('pinOverlay').style.display="flex"; 
-        pin=""; updateDots(); 
+        document.getElementById('pinOverlay').style.display="flex"; pin=""; updateDots(); 
     }
 
     function kp(n){ if(pin.length<4){pin+=n; updateDots();} }
@@ -120,28 +113,18 @@
     function submitPin(){ 
         if(pin===correctPin){ 
             document.getElementById('pinOverlay').style.display="none"; 
-            processPaymentFinal(amountToPay); 
-            input.value=""; checkInput(); 
-        } else { 
-            alert("WRONG PIN! Try 1234"); pin=""; updateDots(); 
-        } 
+            processPaymentFinal(amountToPay); input.value=""; checkInput(); 
+        } else { alert("WRONG PIN! Try 1234"); pin=""; updateDots(); } 
     }
 
-    function sendChatMessage(m){ document.getElementById('chatList').innerHTML+=`<div class="bubble sent">${m}</div>`; scrollToBottom(); }
-    
-    function scrollToBottom(){ const c=document.getElementById('chatList'); c.scrollTop=c.scrollHeight; }
+    function sendChatMessage(m){ document.getElementById('chatList').innerHTML+=`<div class="bubble sent">${m}</div>`; }
 
     // --- FINAL PAYMENT SIMULATION ---
     function processPaymentFinal(a){
-      // 1. Show the "Processing" bubble in the chat
-      document.getElementById('chatList').innerHTML += `<div class="bubble paid" id="tempBubble"><div style="font-size:11px;color:#666;">Paying to ${name}</div><div class="amt-large">₹ ${a}</div><div style="font-size:11px;color:#888;">Processing...</div></div>`;
-      scrollToBottom();
-
-      // 2. Wait 2 seconds, then redirect to Success Page
+      document.getElementById('chatList').innerHTML += `<div class="bubble paid"><div style="font-size:11px;color:#666;">Paying to ${name}</div><div class="amt-large">₹ ${a}</div><div style="font-size:11px;color:#888;">Processing...</div></div>`;
       setTimeout(() => {
-          // This redirects to your success.html
           location.href = `success.html?amount=${a}&name=${encodeURIComponent(name)}&bank=${selectedBankName}`; 
-      }, 2000);
+      }, 1500);
     }
 
     if(preFilledAmt){ input.value=preFilledAmt; checkInput(); setTimeout(()=>{handleAction();},500); }
