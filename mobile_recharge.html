@@ -7,8 +7,49 @@
     <style>
         body { margin: 0; font-family: sans-serif; background: #f1f3f6; } 
         .header { background: #5f259f; padding: 15px; color: white; display: flex; gap: 15px; align-items: center; } 
-        .card { background: white; padding: 15px; margin: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        /* Card Styling */
+        .card { 
+            background: white; 
+            padding: 15px; 
+            margin: 15px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            opacity: 0.6; /* Dimmed initially */
+            pointer-events: none; /* Unclickable initially */
+            transition: 0.3s;
+        }
+        
+        /* When Number is Valid, Cards become Active */
+        .card.active {
+            opacity: 1;
+            pointer-events: all;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
         .card:active { transform: scale(0.98); background-color: #f9f9f9; }
+        
+        /* Input Styling */
+        .mobile-input {
+            width: 100%; 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border: 2px solid #ddd; /* Thicker border */
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            outline: none;
+            font-size: 18px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Green border when valid */
+        .mobile-input.valid {
+            border-color: #2e7d32;
+            background-color: #f1f8e9;
+        }
     </style>
 </head>
 <body>
@@ -18,7 +59,13 @@
     </div>
     
     <div style="padding:15px;">
-        <input type="text" placeholder="Enter Mobile Number" style="width:100%; padding:15px; margin-bottom:20px; border:1px solid #ddd; border-radius:8px; box-sizing: border-box; outline: none;">
+        
+        <input type="tel" 
+               class="mobile-input" 
+               id="mobInput"
+               placeholder="Enter Mobile Number" 
+               maxlength="10" 
+               oninput="validateRecharge(this)">
         
         <p style="font-size: 12px; color: #666; font-weight: bold;">POPULAR PLANS</p>
 
@@ -39,9 +86,32 @@
     </div>
 
     <script>
+        function validateRecharge(field) {
+            // 1. Remove non-numbers instantly
+            field.value = field.value.replace(/[^0-9]/g, '');
+            
+            // 2. Unlock Plans if exactly 10 digits
+            const cards = document.querySelectorAll('.card');
+            
+            if (field.value.length === 10) {
+                field.classList.add('valid'); // Turn input Green
+                cards.forEach(card => card.classList.add('active')); // Light up cards
+            } else {
+                field.classList.remove('valid');
+                cards.forEach(card => card.classList.remove('active')); // Dim cards
+            }
+        }
+
         function pay(amount){ 
-            // This simply redirects to the Payment Chat with the amount
-            location.href = `payment_chat.html?mobile=Jio-Prepaid&name=Jio Recharge&amt=${amount}`; 
+            const mobile = document.getElementById('mobInput').value;
+            
+            // Final check just in case
+            if(mobile.length === 10) {
+                const fakeName = "User " + mobile.slice(-4);
+                location.href = `payment_chat.html?mobile=${mobile}&name=${fakeName}&amt=${amount}`; 
+            } else {
+                alert("Please enter a valid 10-digit number first.");
+            }
         }
     </script>
 </body>
