@@ -2,64 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success</title>
+    <title>Payment Successful</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body { margin: 0; font-family: sans-serif; background-color: #0F9D58; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .success-icon { background: white; color: #0F9D58; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: pop 0.5s; }
-        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #00baf2; /* Initial Blue */ color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; transition: background-color 0.5s; }
+        
+        .success-icon {
+            background: white; color: #00baf2; width: 80px; height: 80px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        h2 { font-weight: 400; margin: 0; font-size: 18px; opacity: 0.9; }
         .amount { font-size: 48px; font-weight: bold; margin: 10px 0; }
-        .recipient { background: rgba(255, 255, 255, 0.2); padding: 5px 15px; border-radius: 20px; font-size: 16px; }
-        .btn-home { position: absolute; bottom: 50px; background: white; color: #0F9D58; padding: 15px 40px; border-radius: 30px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .recipient { font-size: 16px; background: rgba(255, 255, 255, 0.2); padding: 5px 15px; border-radius: 20px; margin-top: 5px; }
+
+        /* Navigation Buttons */
+        .bottom-nav { position: absolute; bottom: 40px; display: flex; gap: 40px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 12px; opacity: 0.8; cursor: pointer; }
+        .nav-item i { font-size: 24px; margin-bottom: 5px; background: rgba(255,255,255,0.2); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
     </style>
 </head>
 <body>
-    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
-    <h2 style="margin:0; opacity:0.9;">Payment Successful</h2>
-    <div class="amount" id="displayAmount">₹0.00</div>
+
+    <div class="success-icon" id="iconBox"><i class="fa-solid fa-check"></i></div>
+
+    <h2 id="statusText">Processing...</h2>
+    <div class="amount" id="displayAmount">₹...</div>
     <div class="recipient" id="displayName">...</div>
 
-    <a href="Home Screen.html" class="btn-home">Done</a>
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='balance.html'">
+            <i class="fa-solid fa-building-columns"></i><span>Check Balance</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='Home Screen.html'">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </div>
+    </div>
 
     <script>
-        // 1. Get Transaction Details from URL
+        // 1. Get Details from URL
         const urlParams = new URLSearchParams(window.location.search);
         const amount = parseFloat(urlParams.get('amount') || urlParams.get('amt') || "0");
         const name = urlParams.get('name') || "Merchant";
-        
-        // Display on screen
+        const bank = urlParams.get('bank') || "SBI"; // Default to SBI
+
+        // 2. Display Initial Info
         document.getElementById('displayAmount').innerText = "₹" + amount;
         document.getElementById('displayName').innerText = "Paid to " + name;
-        if(navigator.vibrate) navigator.vibrate(200);
 
-        // --- REAL LOGIC STARTS HERE ---
+        // 3. Fake Processing Delay (0.5s) then turn GREEN
+        setTimeout(() => {
+            document.body.style.backgroundColor = "#0F9D58"; // Turn Green
+            document.getElementById('iconBox').style.color = "#0F9D58";
+            document.getElementById('statusText').innerText = "Payment Successful";
+            
+            // Audio Feedback (Vibrate)
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-        // 2. DEDUCT BALANCE
-        // Default starting balance is 50,000 if not set
-        let currentBalance = parseFloat(localStorage.getItem('walletBalance'));
-        if (isNaN(currentBalance)) currentBalance = 50000; 
+            // --- REAL MONEY LOGIC ---
+            processTransaction(amount, name, bank);
 
-        // Only deduct if we haven't processed this specific page load yet (simple check)
-        // ideally we use IDs, but for a demo, this is fine:
-        currentBalance = currentBalance - amount;
-        localStorage.setItem('walletBalance', currentBalance);
+        }, 500);
 
-        // 3. SAVE TO HISTORY
-        // Get existing history or empty list
-        let history = JSON.parse(localStorage.getItem('txHistory')) || [];
-        
-        // Add new transaction to the TOP of the list
-        const newTx = {
-            name: name,
-            amount: amount,
-            date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}),
-            type: 'Debit'
-        };
-        history.unshift(newTx);
-        
-        // Save back to storage
-        localStorage.setItem('txHistory', JSON.stringify(history));
+        function processTransaction(amt, recipientName, bankName) {
+            // A. STORAGE KEYS (Support SBI vs HDFC)
+            const balanceKey = bankName === 'HDFC' ? 'walletBalance_HDFC' : 'walletBalance';
+            const defaultBal = bankName === 'HDFC' ? 125000 : 50000;
 
+            // B. READ CURRENT BALANCE
+            let currentBal = parseFloat(localStorage.getItem(balanceKey));
+            if(isNaN(currentBal)) currentBal = defaultBal;
+
+            // C. DEDUCT MONEY
+            // We use sessionStorage to ensure we don't deduct twice if you refresh the page
+            const txId = recipientName + amt + new Date().getMinutes();
+            if(!sessionStorage.getItem(txId)) {
+                currentBal -= amt;
+                localStorage.setItem(balanceKey, currentBal);
+                sessionStorage.setItem(txId, "true"); // Mark as paid
+                
+                // D. SAVE TO HISTORY
+                saveToHistory(amt, recipientName);
+            }
+        }
+
+        function saveToHistory(amt, name) {
+            let history = JSON.parse(localStorage.getItem('txHistory')) || [];
+            
+            const newTx = {
+                name: name,
+                amount: amt,
+                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}),
+                type: 'Debit'
+            };
+            
+            history.unshift(newTx); // Add to top
+            localStorage.setItem('txHistory', JSON.stringify(history));
+        }
     </script>
+
 </body>
 </html>
