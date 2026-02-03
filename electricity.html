@@ -1,32 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electricity</title>
-  <link rel="stylesheet" href="Home Screen.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Bill</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body{margin:0; font-family:sans-serif; background:#f1f3f6;} 
+        .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px; align-items: center;} 
+        .container { padding: 20px; }
+
+        select, input {
+            width: 100%; padding: 15px; margin-bottom: 20px;
+            border: 1px solid #ddd; border-radius: 8px; outline: none; background: white;
+            font-size: 16px; box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%; padding: 15px; background: #5f259f; color: white;
+            border: none; border-radius: 25px; font-weight: bold; cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Bill Card (Hidden initially) */
+        #billCard {
+            display: none; background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-      <i class="fa-solid fa-arrow-left back-btn" onclick="history.back()"></i>
-      <h3>Electricity Bill</h3>
-  </div>
-  <div style="padding: 20px;">
-      <p style="font-size:12px; font-weight:bold; color:#666;">CONSUMER NUMBER</p>
-      <input type="text" id="val" class="input-box" placeholder="Example: 1234567890">
-      <button class="btn-primary" onclick="go()">Fetch Bill</button>
-  </div>
-  <script>
-      function go(){
-          const v = document.getElementById('val').value;
-          if(v.length>5) {
-              const randomBill = Math.floor(Math.random()*2000)+100;
-              // Pass the random bill amount to payment chat
-              location.href=`payment_chat.html?mobile=BILL-${v}&name=Electricity Board&amt=${randomBill}`;
-          } else {
-              alert("Enter valid Consumer Number");
-          }
-      }
-  </script>
+
+    <div class="header">
+        <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor:pointer;"></i>
+        <h3>Electricity Bill</h3>
+    </div>
+
+    <div class="container">
+        <div id="inputSection">
+            <label style="font-size:12px; font-weight:bold; color:#666; display:block; margin-bottom:10px;">SELECT BOARD</label>
+            <select id="board">
+                <option>BESCOM (Bangalore)</option>
+                <option>Tata Power (Mumbai)</option>
+                <option>Adani Electricity</option>
+                <option>TNEB (Tamil Nadu)</option>
+            </select>
+
+            <input type="text" id="consumerId" placeholder="Consumer Number / Account ID">
+            
+            <button class="btn" onclick="fetchBill()">FETCH BILL</button>
+        </div>
+
+        <div id="billCard">
+            <div style="font-size:12px; color:#666;">BILL DETAILS</div>
+            <h2 style="margin: 10px 0;">₹ 1,450.00</h2>
+            <div style="font-size:14px; margin-bottom:5px;"><b>Name:</b> <span id="userName">Arjun K</span></div>
+            <div style="font-size:14px; color:red; margin-bottom:20px;">Due Date: 15 Feb 2026</div>
+            
+            <button class="btn" onclick="payBill()">PAY BILL</button>
+        </div>
+    </div>
+
+    <script>
+        function fetchBill() {
+            const id = document.getElementById('consumerId').value;
+            if(id.length < 5) { alert("Please enter valid Consumer ID"); return; }
+
+            // Fake Loading Effect
+            const btn = document.querySelector('.btn');
+            btn.innerText = "Fetching...";
+            btn.style.opacity = "0.7";
+
+            setTimeout(() => {
+                // Hide inputs, show Bill
+                document.getElementById('inputSection').style.display = 'none';
+                document.getElementById('billCard').style.display = 'block';
+            }, 1000); // 1 second delay
+        }
+
+        function payBill() {
+            // Sends the Bill Amount to Payment Chat
+            // Note: We send 'Electricity Board' as the name
+            location.href = `payment_chat.html?mobile=BESCOM&name=Electricity Board&amt=1450`;
+        }
+    </script>
 </body>
 </html>
