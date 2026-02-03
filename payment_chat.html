@@ -107,7 +107,7 @@
     
     function openPinScreen(bank){ 
         closeBankSheet(); selectedBankName = bank; 
-        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank"; 
+        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank (1234)"; 
         document.getElementById('pinAmt').innerText="₹"+amountToPay; 
         document.getElementById('pinOverlay').style.display="flex"; pin=""; updateDots(); 
     }
