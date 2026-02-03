@@ -47,7 +47,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const amount = parseFloat(urlParams.get('amount') || urlParams.get('amt') || "0");
         const name = urlParams.get('name') || "Merchant";
-        const bank = urlParams.get('bank') || "SBI"; // Default to SBI
+        const bank = urlParams.get('bank') || "SBI"; 
 
         // 2. Display Initial Info
         document.getElementById('displayAmount').innerText = "₹" + amount;
@@ -59,34 +59,39 @@
             document.getElementById('iconBox').style.color = "#0F9D58";
             document.getElementById('statusText').innerText = "Payment Successful";
             
-            // Audio Feedback (Vibrate)
             if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-            // --- REAL MONEY LOGIC ---
+            // --- STRICT ONE-TIME DEDUCTION LOGIC ---
             processTransaction(amount, name, bank);
 
         }, 500);
 
         function processTransaction(amt, recipientName, bankName) {
-            // A. STORAGE KEYS (Support SBI vs HDFC)
+            // A. Create a unique "Lock" based on the URL
+            // If the user refreshes, this 'lockKey' will be IDENTICAL.
+            const lockKey = "TX_LOCK_" + window.location.search;
+
+            // B. CHECK THE LOCK
+            if(sessionStorage.getItem(lockKey)) {
+                console.log("Transaction already processed on this page load. Skipping.");
+                return; // STOP! Do not deduct again.
+            }
+
+            // C. LOCK IT NOW
+            sessionStorage.setItem(lockKey, "PAID");
+
+            // D. PROCEED WITH DEDUCTION
             const balanceKey = bankName === 'HDFC' ? 'walletBalance_HDFC' : 'walletBalance';
             const defaultBal = bankName === 'HDFC' ? 125000 : 50000;
 
-            // B. READ CURRENT BALANCE
             let currentBal = parseFloat(localStorage.getItem(balanceKey));
             if(isNaN(currentBal)) currentBal = defaultBal;
 
-            // C. DEDUCT MONEY
-            // We use sessionStorage to ensure we don't deduct twice if you refresh the page
-            const txId = recipientName + amt + new Date().getMinutes();
-            if(!sessionStorage.getItem(txId)) {
-                currentBal -= amt;
-                localStorage.setItem(balanceKey, currentBal);
-                sessionStorage.setItem(txId, "true"); // Mark as paid
-                
-                // D. SAVE TO HISTORY
-                saveToHistory(amt, recipientName);
-            }
+            currentBal -= amt;
+            localStorage.setItem(balanceKey, currentBal);
+            
+            // E. SAVE TO HISTORY
+            saveToHistory(amt, recipientName);
         }
 
         function saveToHistory(amt, name) {
@@ -99,7 +104,7 @@
                 type: 'Debit'
             };
             
-            history.unshift(newTx); // Add to top
+            history.unshift(newTx); 
             localStorage.setItem('txHistory', JSON.stringify(history));
         }
     </script>
