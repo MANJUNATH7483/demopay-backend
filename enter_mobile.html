@@ -4,14 +4,82 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Enter Number</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>body{margin:0; font-family:sans-serif; background:#f1f3f6;} .header{background:#5f259f; padding:15px; color:white; display:flex; gap:15px;} input{width:100%; padding:15px; border:1px solid #ddd; margin-top:20px; box-sizing:border-box;} button{width:100%; padding:15px; background:#5f259f; color:white; border:none; margin-top:20px; font-weight:bold; cursor: pointer;}</style>
+  <style>
+      body{margin:0; font-family:sans-serif; background:#f1f3f6;} 
+      .header{background:#5f259f; padding:15px; color:white; display:flex; align-items:center; gap:15px;} 
+      .container { padding: 20px; background: white; height: 100vh; }
+      
+      input{
+          width:100%; 
+          padding:15px; 
+          border:1px solid #ddd; 
+          margin-top:20px; 
+          box-sizing:border-box; 
+          border-radius: 8px;
+          font-size: 18px;
+          letter-spacing: 2px;
+      }
+      
+      button{
+          width:100%; 
+          padding:15px; 
+          background:#5f259f; 
+          color:white; 
+          border:none; 
+          margin-top:20px; 
+          font-weight:bold; 
+          cursor: pointer;
+          border-radius: 25px;
+          font-size: 16px;
+          opacity: 0.5; /* Dim initially */
+          pointer-events: none; /* Disable click initially */
+          transition: 0.3s;
+      }
+
+      /* When button is active */
+      button.active {
+          opacity: 1;
+          pointer-events: all;
+      }
+  </style>
 </head>
 <body>
-  <div class="header"><i class="fa-solid fa-arrow-left" onclick="history.back()"></i><h3>Enter Number</h3></div>
-  <div style="padding:20px;">
-      <input type="tel" id="n" placeholder="Mobile Number">
-      <button onclick="go()">PROCEED</button>
+  <div class="header">
+      <i class="fa-solid fa-arrow-left" onclick="history.back()" style="cursor:pointer;"></i>
+      <h3 style="margin:0;">Enter Mobile Number</h3>
   </div>
-  <script>function go(){location.href=`payment_chat.html?mobile=${document.getElementById('n').value}&name=Unknown`;}</script>
+  
+  <div class="container">
+      <p style="color:#666; font-size:14px; margin-top:0;">Pay to any UPI App</p>
+      
+      <input type="tel" id="n" placeholder="00000 00000" maxlength="10" oninput="validateInput(this)">
+      
+      <button id="btn" onclick="go()">PROCEED</button>
+  </div>
+
+  <script>
+    function validateInput(field) {
+        // 1. Remove any non-number characters immediately
+        field.value = field.value.replace(/[^0-9]/g, '');
+
+        // 2. Check if length is exactly 10
+        const btn = document.getElementById('btn');
+        if (field.value.length === 10) {
+            btn.classList.add('active'); // Enable button
+        } else {
+            btn.classList.remove('active'); // Disable button
+        }
+    }
+
+    function go(){
+        const mobile = document.getElementById('n').value;
+        if(mobile.length === 10) {
+            // Success: Go to Payment Chat
+            location.href = `payment_chat.html?mobile=${mobile}&name=User ${mobile.slice(-4)}`;
+        } else {
+            alert("Please enter a valid 10-digit mobile number");
+        }
+    }
+  </script>
 </body>
 </html>
