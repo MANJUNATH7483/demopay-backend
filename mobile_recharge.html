@@ -16,8 +16,64 @@
         <div class="card" onclick="pay(299)"><b>₹299</b><br><span style="font-size:12px; color:#666;">1.5GB/Day • 28 Days</span></div>
         <div class="card" onclick="pay(719)"><b>₹719</b><br><span style="font-size:12px; color:#666;">2GB/Day • 84 Days</span></div>
     </div>
-    <script>
-        function pay(a){ location.href=`payment_chat.html?mobile=Recharge&name=Jio Recharge&amt=${a}`; }
-    </script>
+   <script>
+    let amountToPay=0, pin="", correctPin="1234", selectedBankName="SBI", isPaymentMode=false;
+    const urlParams=new URLSearchParams(window.location.search);
+    const name=urlParams.get('name')||'Merchant', mobile=urlParams.get('mobile')||'...', preFilledAmt=urlParams.get('amt');
+    
+    document.getElementById('uName').innerText=name; 
+    document.getElementById('uMobile').innerText="+91 "+mobile; 
+    document.getElementById('uAvatar').innerText=name.charAt(0);
+    const input=document.getElementById('inputBox'), btn=document.getElementById('actionButton');
+
+    function checkInput(){
+      const val=input.value.trim();
+      if(val.length>0 && /^[0-9]+(\.\d+)?$/.test(val)){ isPaymentMode=true; btn.className="action-btn btn-pay"; btn.innerHTML=`Pay ₹${val}`; }
+      else{ isPaymentMode=false; btn.className="action-btn btn-send"; btn.innerHTML=`<i class="fa-solid fa-paper-plane"></i>`; }
+    }
+
+    function handleAction(){
+      const val=input.value.trim(); if(!val)return;
+      if(isPaymentMode){ amountToPay=parseFloat(val); document.getElementById('payAmount').innerText="₹"+amountToPay; document.getElementById('bgOverlay').style.display="block"; setTimeout(()=>document.getElementById('bankSheet').classList.add('sheet-visible'),10); }
+      else{ sendChatMessage(val); input.value=""; checkInput(); }
+    }
+
+    function closeBankSheet(){ document.getElementById('bankSheet').classList.remove('sheet-visible'); setTimeout(()=>document.getElementById('bgOverlay').style.display="none",300); }
+    
+    function openPinScreen(bank){ 
+        closeBankSheet(); selectedBankName = bank; 
+        document.getElementById('pinBankName').innerText = bank==='SBI'?"State Bank of India (8829)":"HDFC Bank"; 
+        document.getElementById('pinAmt').innerText="₹"+amountToPay; 
+        document.getElementById('pinOverlay').style.display="flex"; pin=""; updateDots(); 
+    }
+
+    function kp(n){ if(pin.length<4){pin+=n; updateDots();} }
+    function kd(){ pin=pin.slice(0,-1); updateDots(); }
+    function updateDots(){ for(let i=1;i<=4;i++) document.getElementById('d'+i).className=i<=pin.length?"p-dot p-filled":"p-dot"; }
+    
+    function submitPin(){ 
+        if(pin===correctPin){ 
+            document.getElementById('pinOverlay').style.display="none"; 
+            processPaymentFinal(amountToPay); input.value=""; checkInput(); 
+        } else { alert("WRONG PIN! Try 1234"); pin=""; updateDots(); } 
+    }
+
+    function sendChatMessage(m){ document.getElementById('chatList').innerHTML+=`<div class="bubble sent">${m}</div>`; }
+
+    function processPaymentFinal(a){
+      document.getElementById('chatList').innerHTML += `<div class="bubble paid"><div style="font-size:11px;color:#666;">Paying to ${name}</div><div class="amt-large">₹ ${a}</div><div style="font-size:11px;color:#888;">Processing...</div></div>`;
+      setTimeout(() => {
+          location.href = `success.html?amount=${a}&name=${encodeURIComponent(name)}&bank=${selectedBankName}`; 
+      }, 1500);
+    }
+
+    // 🚀 THE FIX IS HERE:
+    // We check for the amount, fill it in, update the button style, BUT WE DO NOT CLICK IT.
+    if(preFilledAmt){ 
+        input.value=preFilledAmt; 
+        checkInput(); 
+        // Deleted the "setTimeout" line that was auto-clicking
+    }
+  </script>
 </body>
 </html>
