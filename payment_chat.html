@@ -41,7 +41,7 @@
 </head>
 <body>
   <div class="chat-header">
-    <i class="fa-solid fa-arrow-left" onclick="history.back()"></i>
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='Home Screen.html'"></i>
     <div class="user-avatar" id="uAvatar">U</div>
     <div style="flex: 1;"><h4 style="margin: 0;" id="uName">User</h4><span style="font-size: 11px;" id="uMobile">+91 ...</span></div>
   </div>
@@ -82,9 +82,12 @@
   <script>
     let amountToPay=0, pin="", correctPin="1234", selectedBankName="SBI", isPaymentMode=false;
     const urlParams=new URLSearchParams(window.location.search);
-    const name=urlParams.get('name')||'User', mobile=urlParams.get('mobile')||'...', preFilledAmt=urlParams.get('amt');
+    const name=urlParams.get('name')||'Merchant', mobile=urlParams.get('mobile')||'...', preFilledAmt=urlParams.get('amt');
     
-    document.getElementById('uName').innerText=name; document.getElementById('uMobile').innerText="+91 "+mobile; document.getElementById('uAvatar').innerText=name.charAt(0);
+    document.getElementById('uName').innerText=name; 
+    document.getElementById('uMobile').innerText="+91 "+mobile; 
+    document.getElementById('uAvatar').innerText=name.charAt(0);
+    
     const input=document.getElementById('inputBox'), btn=document.getElementById('actionButton');
 
     function checkInput(){
@@ -115,7 +118,6 @@
     function updateDots(){ for(let i=1;i<=4;i++) document.getElementById('d'+i).className=i<=pin.length?"p-dot p-filled":"p-dot"; }
     
     function submitPin(){ 
-        // Client-side PIN check
         if(pin===correctPin){ 
             document.getElementById('pinOverlay').style.display="none"; 
             processPaymentFinal(amountToPay); 
@@ -129,41 +131,17 @@
     
     function scrollToBottom(){ const c=document.getElementById('chatList'); c.scrollTop=c.scrollHeight; }
 
-    // --- MAIN BACKEND INTEGRATION (FIXED) ---
-    async function processPaymentFinal(a){
-      const paymentData = {
-          amount: a,
-          bank: selectedBankName, // 'SBI' or 'HDFC'
-          recipient: name,
-          description: "Payment to " + name
-      };
-
+    // --- FINAL PAYMENT SIMULATION ---
+    function processPaymentFinal(a){
+      // 1. Show the "Processing" bubble in the chat
       document.getElementById('chatList').innerHTML += `<div class="bubble paid" id="tempBubble"><div style="font-size:11px;color:#666;">Paying to ${name}</div><div class="amt-large">₹ ${a}</div><div style="font-size:11px;color:#888;">Processing...</div></div>`;
       scrollToBottom();
 
-      try {
-          // CORRECT FETCH SYNTAX & RELATIVE URL
-          const response = await fetch('/api/pay', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(paymentData)
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-              setTimeout(()=>{ 
-                  location.href=`success.html?amt=${a}&name=${name}&bank=${selectedBankName}`; 
-              }, 1500);
-          } else {
-              alert("Payment Failed: " + result.message);
-              document.getElementById('tempBubble').remove(); 
-          }
-
-      } catch (error) {
-          alert("Server Error. Check Python Server.");
-          document.getElementById('tempBubble').remove();
-      }
+      // 2. Wait 2 seconds, then redirect to Success Page
+      setTimeout(() => {
+          // This redirects to your success.html
+          location.href = `success.html?amount=${a}&name=${encodeURIComponent(name)}&bank=${selectedBankName}`; 
+      }, 2000);
     }
 
     if(preFilledAmt){ input.value=preFilledAmt; checkInput(); setTimeout(()=>{handleAction();},500); }
